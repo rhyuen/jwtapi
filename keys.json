@@ -1,0 +1,4 @@
+{
+  "jwtsecret": "YETANOTHERSECRETEYES",
+  "db": "mongodb://docker:docker@ds059496.mlab.com:59496/devnode"
+}
