@@ -9,11 +9,15 @@ router.get("/", (req, res) => {
 });
 
 router.get("/setup", (req, res) => {
-  var currUser = new User({
-    name: "robert",
-    password: "password",
-    admin: true
-  });
+  res.sendFile(path.join(__dirname, "public/views/register.html"));
+});
+
+router.post("/setup", (req, res) => {
+
+  var currUser = new User();
+  currUser.name = req.body.newusername;
+  currUser.password =  currUser.generateHash(req.body.newpassword);
+  currUser.admin = true;
 
   currUser.save(function(err, user){
     if(err)

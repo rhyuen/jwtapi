@@ -18,16 +18,15 @@ apiRouter.post("/authenticate", (req, res) => {
         success: false,
         message: "Auth failed.  User doesn't exist."
       });
-    else{
-      if(user.password !== req.body.password){
+    else{      
+
+      if(!user.validPassword(req.body.password)){
         res.json({
           success: false,
           message: "Auth failed. User pw wrong."
         });
       }else{
-        const token = jwt.sign(user, config.jwtsecret, {
-          expiresIn: 1440
-        });
+        const token = jwt.sign(user.name, config.jwtsecret);
         res.json({
           success: true,
           message: "Auth Success. Token attached",
@@ -38,16 +37,35 @@ apiRouter.post("/authenticate", (req, res) => {
   });
 });
 
-apiRouter.use((req, res, next) => {
 
-});
 
-apiRouter.get("/users", (req, res) => {
+function isAuthJwt(req, res, next){
+  const token = req.body.token || req.query.token ||req.headers["x-access-token"];
+  if(token){
+    jwt.verify(token, config.jwtsecret, (err, decoded) => {
+      if(err)
+        return res.json({success: false, message: "Token Auth Failed"});
+      else{
+        req.decoded = decoded;
+        next();
+      }
+    });
+  }else{
+    return res.status(403).json({
+      success:false,
+      message: "Auth failed. No token provided."
+    });
+  }
+}
+
+apiRouter.get("/users", isAuthJwt, (req, res) => {
   User.find({}, (err, users) => {
     if(err)
       return res.send(err);
     res.json({users: users});
   });
 });
+
+
 
 module.exports = apiRouter;
