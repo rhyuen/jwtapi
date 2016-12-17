@@ -5,12 +5,31 @@
   </head>
   <body>
     <div>
-      form for authencation.
+      <h1>Navigation</h1>
+      <div>
+        <a href = "/setup">Registration</a>
+      </div>
+    </div>
+    <div>
+      Page:form for authencation.
     </div>
     <form action = "/api/authenticate" method = "POST">
-      <input type = "text" name = "name"/><br />
-      <input type = "text" name = "password"/><br/>
+      <input type = "text" name = "name" required/><br />
+      <input type = "text" name = "password" required/><br/>
       <input type = "submit" />
     </form>
+
+
+    <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script type = "text/javascript">
+    $(document.ready(function(){
+
+      var token = "";
+
+      $("form").post("/api/authenticate", function(e){
+
+      });
+    }));
+    </script>
   </body>
 </html>

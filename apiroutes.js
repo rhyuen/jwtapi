@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("./models/user.js");
+const Item = require("./models/item.js");
 const jwt = require("jsonwebtoken");
 const config = require("./config.js");
 
@@ -18,7 +19,7 @@ apiRouter.post("/authenticate", (req, res) => {
         success: false,
         message: "Auth failed.  User doesn't exist."
       });
-    else{      
+    else{
 
       if(!user.validPassword(req.body.password)){
         res.json({
@@ -47,6 +48,8 @@ function isAuthJwt(req, res, next){
         return res.json({success: false, message: "Token Auth Failed"});
       else{
         req.decoded = decoded;
+        console.log("JWT VERIFY cb value. isAuthJWT Scope: %s", decoded);
+        req.body.token = token;
         next();
       }
     });
@@ -62,9 +65,30 @@ apiRouter.get("/users", isAuthJwt, (req, res) => {
   User.find({}, (err, users) => {
     if(err)
       return res.send(err);
-    res.json({users: users});
+    res.json({users: users, token: req.body.token});
   });
 });
+
+apiRouter.get("/items", isAuthJwt, (req, res) => {
+  Item.find({owner: req.decoded}, (err, items) => {
+    if(err)
+      return res.send(err);
+    res.json({token: req.body.token, items: items});
+  });
+});
+
+apiRouter.post("/items", isAuthJwt, (req, res) => {
+   var currItem = new Item();
+   currItem.itemName = req.body.newitemname;
+   currItem.quantity = req.body.quantity;
+   currItem.owner = req.decoded;
+   currItem.save(function(err, latestItem){
+    if(err)
+      return res.send(err);
+    res.json({message: "New Item added.", item: latestItem});
+  });
+});
+
 
 
 

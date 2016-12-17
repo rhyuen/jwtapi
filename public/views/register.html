@@ -5,11 +5,17 @@
   </head>
   <body>
     <div>
+      <h1>Navigation</h1>
+      <div>
+        <a href = "/">Login/Home Page</a>
+      </div>
+    </div>
+    <div>
       New User Form
     </div>
     <form action = "/setup" method = "POST">
-      <input type = "text" placeholder = "Username" name = "newusername"/><br />
-      <input type = "text" placeholder = "Password" name = "newpassword"/><br/>
+      <input type = "text" placeholder = "Username" name = "newusername" required/><br />
+      <input type = "text" placeholder = "Password" name = "newpassword" required/><br/>
       <input type = "submit" />
     </form>
   </body>

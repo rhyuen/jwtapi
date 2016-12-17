@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
 
 const config = require("./config.js");
 const routes = require("./routes.js");
@@ -12,12 +13,16 @@ const User = require("./models/user.js");
 const apiRoutes = require("./apiroutes.js");
 
 app.set("PORT", process.env.PORT|| 9899);
-mongoose.connect(config.db, function(err){
+mongoose.connect(config.db, (err) => {
   console.log("[%s] DB CONN ATTEMPT", new Date().toLocaleString());
+});
+mongoose.connection.once("open", () => {
+  console.log("[%s] DB CONN SUCCESS", new Date().toLocaleString());
 });
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/", routes);
