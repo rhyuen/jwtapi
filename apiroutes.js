@@ -69,6 +69,7 @@ apiRouter.get("/users", isAuthJwt, (req, res) => {
   });
 });
 
+//ONLY GETS ITEMS BASED ON USER's TOKEN.
 apiRouter.get("/items", isAuthJwt, (req, res) => {
   Item.find({owner: req.decoded}, (err, items) => {
     if(err)

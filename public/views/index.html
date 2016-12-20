@@ -5,7 +5,8 @@
   </head>
   <body>
     <div>
-      <h1>Navigation</h1>
+      <h1><strong>USER LOGIN PAGE</strong></h1>
+      <h4>Navigation</h4>
       <div>
         <a href = "/setup">Registration</a>
       </div>
@@ -19,17 +20,35 @@
       <input type = "submit" />
     </form>
 
+    <div id = "response">
+      <div class = "content">
 
-    <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+      </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script type = "text/javascript">
-    $(document.ready(function(){
+    $(document).ready(function(){
 
       var token = "";
+      var formName = $("input[name='name']");
+      var formPassword = $("input[name='password']");
+      formName.css({"background-color": "pink"});
+      formPassword.css({"background-color": "orange"});
 
-      $("form").post("/api/authenticate", function(e){
-
+      $("form").submit(function(e){
+        e.preventDefault();
+        console.log(formName.val());
+        console.log(formPassword.val());
+        $.post("/api/authenticate", {name: formName.val(), password: formPassword.val()}, function(data){
+          console.log("The token is as follows: %s", data.token);
+          $("#response .content").append(
+            $("<p/>", {text: "Token: " + data.token})
+          );
+        });
       });
-    }));
+    });
     </script>
   </body>
 </html>
