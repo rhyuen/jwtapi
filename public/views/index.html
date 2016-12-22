@@ -9,6 +9,7 @@
       <h4>Navigation</h4>
       <div>
         <a href = "/setup">Registration</a>
+        <a href = "/items" id = "itemslink">Items</a>
       </div>
     </div>
     <div>
@@ -17,7 +18,7 @@
     <form action = "/api/authenticate" method = "POST">
       <input type = "text" name = "name" required/><br />
       <input type = "text" name = "password" required/><br/>
-      <input type = "submit" />
+      <input type = "submit" value="Login" />
     </form>
 
     <div id = "response">
@@ -31,7 +32,6 @@
     <script type = "text/javascript">
     $(document).ready(function(){
 
-      var token = "";
       var formName = $("input[name='name']");
       var formPassword = $("input[name='password']");
       formName.css({"background-color": "pink"});
@@ -39,13 +39,29 @@
 
       $("form").submit(function(e){
         e.preventDefault();
-        console.log(formName.val());
-        console.log(formPassword.val());
         $.post("/api/authenticate", {name: formName.val(), password: formPassword.val()}, function(data){
-          console.log("The token is as follows: %s", data.token);
-          $("#response .content").append(
-            $("<p/>", {text: "Token: " + data.token})
-          );
+          localStorage.setItem("token", data.token);
+          $("#response .content")
+            .append($("<p/>", {text: "Token: " + data.token}));
+          $("#response .content")
+            .append($("<p/>", {text: "Token from LocalStorage: " + localStorage.getItem("token")}));
+
+          //WEBSTOREAGE Token to LocalStorage or SessionStorage
+          //$(window).sessionStorage.token
+          //XSS VULN
+          //Authorization: Bearer + data.token;
+          //document.cookie = data.token; //there's other stuff in the cookie as well.
+        });
+      });
+    });
+
+    $("#itemslink").click(function(event){
+      event.preventDefault();
+      $.get("/api/items", {"token": localStorage.getItem("token")}, function(data){
+        console.log(data);
+        data.items.map(function(item){
+          $("#response .content")
+            .append($("<p/>", {text: item.itemName}));
         });
       });
     });
