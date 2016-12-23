@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>JWT Auth and what not.</title>
+  </head>
+  <body>
+    <div>
+      <h1><strong>Privileged User Page</strong></h1>
+
+      <h4>User Page User Page User Page</h4>
+      <div>
+        <a href = "/">Login/Home Page</a>
+        <a href = "/items">Items</a>
+      </div>
+    </div>
+    <form id = "new_item_form" action = "/api/items" method = "POST">
+      <input type = "text" placeholder = "New Item Name" name = "newitemname" required/><br />
+      <input type = "text" placeholder = "Quantity" name = "quantity" required/><br/>
+      <input type = "submit" value = "Add Item"/>
+    </form>
+
+
+    <div id = "recently_added">
+      <div class = "header">
+        <h1>Recently Added</h1>
+      </div>
+      <div class = "content">
+
+      </div>
+    </div>
+    <div id = "user_item_collection">
+      <div class = "header">
+        <h1>User's Item Collection</h1>
+      </div>
+      <div class = "content">
+
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script type = "text/javascript">
+      console.log("SessionStorage TOKEN VALUE: %s", sessionStorage.getItem("token"));
+      console.log("LocalStorage TOKEN VALUE: %s", localStorage.getItem("token"));
+      $.get("/api/items", {token: sessionStorage.getItem("token")}, function(data){
+        console.log(data);
+      });
+
+
+      $("#new_item_form").submit(function(event){
+        event.preventDefault();
+        var new_item_val = $("input[name='newitemname']").val();
+        var new_quantity_val = $("input[name='quantity']").val();
+        var payload = {newitemname: new_item_val, quantity: new_quantity_val, token: sessionStorage.getItem("token")};
+        $.post("/api/items", payload, function(response){
+          $("#recently_added .content").append($("<p/>", {text: response.item.itemName  + " " + response.item.quantity + " " + response.item.owner}));
+          $("input[name='newitemname']").val("");
+          $("input[name='quantity']").val("");
+        });
+      });
+
+
+    </script>
+  </body>
+</html>

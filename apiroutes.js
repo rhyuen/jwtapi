@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const User = require("./models/user.js");
 const Item = require("./models/item.js");
 const jwt = require("jsonwebtoken");
@@ -67,6 +68,13 @@ apiRouter.get("/users", isAuthJwt, (req, res) => {
       return res.send(err);
     res.json({users: users, token: req.body.token});
   });
+});
+
+apiRouter.get("/user", isAuthJwt, (req, res) => {
+
+  console.log("We're here on the privileged user page.");
+  res.render("user");
+  //res.sendFile(path.join(__dirname, "public/views/user.html"));
 });
 
 //ONLY GETS ITEMS BASED ON USER's TOKEN.

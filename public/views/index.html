@@ -12,9 +12,7 @@
         <a href = "/items" id = "itemslink">Items</a>
       </div>
     </div>
-    <div>
-      Page:form for authencation.
-    </div>
+    <div>Page:form for authencation.</div>
     <form action = "/api/authenticate" method = "POST">
       <input type = "text" name = "name" required/><br />
       <input type = "text" name = "password" required/><br/>
@@ -23,7 +21,6 @@
 
     <div id = "response">
       <div class = "content">
-
       </div>
     </div>
 
@@ -41,13 +38,17 @@
         e.preventDefault();
         $.post("/api/authenticate", {name: formName.val(), password: formPassword.val()}, function(data){
           localStorage.setItem("token", data.token);
+          sessionStorage.setItem("token", data.token);
           $("#response .content")
             .append($("<p/>", {text: "Token: " + data.token}));
           $("#response .content")
             .append($("<p/>", {text: "Token from LocalStorage: " + localStorage.getItem("token")}));
 
+
+            $(location).attr("href", "/api/user?token=" + localStorage.getItem("token"));
+
+
           //WEBSTOREAGE Token to LocalStorage or SessionStorage
-          //$(window).sessionStorage.token
           //XSS VULN
           //Authorization: Bearer + data.token;
           //document.cookie = data.token; //there's other stuff in the cookie as well.
