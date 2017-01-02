@@ -8,8 +8,7 @@
       <h1><strong>USER LOGIN PAGE</strong></h1>
       <h4>Navigation</h4>
       <div>
-        <a href = "/setup">Registration</a>
-        <a href = "/items" id = "itemslink">Items</a>
+        <a href = "/setup">Registration</a>        
       </div>
     </div>
     <div>Page:form for authencation.</div>
@@ -26,46 +25,6 @@
 
 
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-    <script type = "text/javascript">
-    $(document).ready(function(){
-
-      var formName = $("input[name='name']");
-      var formPassword = $("input[name='password']");
-      formName.css({"background-color": "pink"});
-      formPassword.css({"background-color": "orange"});
-
-      $("form").submit(function(e){
-        e.preventDefault();
-        $.post("/api/authenticate", {name: formName.val(), password: formPassword.val()}, function(data){
-          localStorage.setItem("token", data.token);
-          sessionStorage.setItem("token", data.token);
-          $("#response .content")
-            .append($("<p/>", {text: "Token: " + data.token}));
-          $("#response .content")
-            .append($("<p/>", {text: "Token from LocalStorage: " + localStorage.getItem("token")}));
-
-
-            $(location).attr("href", "/api/user?token=" + localStorage.getItem("token"));
-
-
-          //WEBSTOREAGE Token to LocalStorage or SessionStorage
-          //XSS VULN
-          //Authorization: Bearer + data.token;
-          //document.cookie = data.token; //there's other stuff in the cookie as well.
-        });
-      });
-    });
-
-    $("#itemslink").click(function(event){
-      event.preventDefault();
-      $.get("/api/items", {"token": localStorage.getItem("token")}, function(data){
-        console.log(data);
-        data.items.map(function(item){
-          $("#response .content")
-            .append($("<p/>", {text: item.itemName}));
-        });
-      });
-    });
-    </script>
+    <script type = "text/javascript" src = "views/index.js"></script>
   </body>
 </html>

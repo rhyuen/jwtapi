@@ -72,7 +72,6 @@ apiRouter.get("/users", isAuthJwt, (req, res) => {
 
 apiRouter.get("/user", isAuthJwt, (req, res) => {
 
-  console.log("We're here on the privileged user page.");
   res.render("user");
   //res.sendFile(path.join(__dirname, "public/views/user.html"));
 });
@@ -98,7 +97,9 @@ apiRouter.post("/items", isAuthJwt, (req, res) => {
   });
 });
 
-
+apiRouter.get("/logout", (req, res) => {
+  res.redirect("/");
+});
 
 
 module.exports = apiRouter;

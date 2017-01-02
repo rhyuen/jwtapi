@@ -7,12 +7,20 @@
     <div>
       <h1><strong>Privileged User Page</strong></h1>
 
-      <h4>User Page User Page User Page</h4>
+      <h4>User Page</h4>
       <div>
         <a href = "/">Login/Home Page</a>
         <a href = "/items">Items</a>
+        <a href = "/api/logout" id = "logout">Logout</a>
       </div>
     </div>
+    <div>
+      <h4>User Details</h4>
+      <div>
+        <img src = "../imgs/testerone.png" />
+      </div>
+    </div>
+
     <form id = "new_item_form" action = "/api/items" method = "POST">
       <input type = "text" placeholder = "New Item Name" name = "newitemname" required/><br />
       <input type = "text" placeholder = "Quantity" name = "quantity" required/><br/>
@@ -37,27 +45,6 @@
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-    <script type = "text/javascript">
-      console.log("SessionStorage TOKEN VALUE: %s", sessionStorage.getItem("token"));
-      console.log("LocalStorage TOKEN VALUE: %s", localStorage.getItem("token"));
-      $.get("/api/items", {token: sessionStorage.getItem("token")}, function(data){
-        console.log(data);
-      });
-
-
-      $("#new_item_form").submit(function(event){
-        event.preventDefault();
-        var new_item_val = $("input[name='newitemname']").val();
-        var new_quantity_val = $("input[name='quantity']").val();
-        var payload = {newitemname: new_item_val, quantity: new_quantity_val, token: sessionStorage.getItem("token")};
-        $.post("/api/items", payload, function(response){
-          $("#recently_added .content").append($("<p/>", {text: response.item.itemName  + " " + response.item.quantity + " " + response.item.owner}));
-          $("input[name='newitemname']").val("");
-          $("input[name='quantity']").val("");
-        });
-      });
-
-
-    </script>
+    <script type = "text/javascript" src = "../views/user.js"></script>
   </body>
 </html>
