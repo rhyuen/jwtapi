@@ -2,13 +2,27 @@
 <html>
   <head>
     <title>JWT Auth and what not.</title>
+    <style>
+      #redirect_message{
+        visibility: : hidden;
+        background-color: rgb(114, 181, 87);
+        color: white;
+        padding: 5px;
+      }
+    </style>
   </head>
   <body>
     <div>
       <h1><strong>USER LOGIN PAGE</strong></h1>
+      <div id = "redirect_message">
+        <div class = "content">
+          Thanks for signing up.  Now try logging in below!
+        </div>
+      </div>
       <h4>Navigation</h4>
       <div>
-        <a href = "/setup">Registration</a>        
+        <a href = "/setup">Registration</a>
+        <a href = "/browse">Browse</a>
       </div>
     </div>
     <div>Page:form for authencation.</div>

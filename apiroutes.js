@@ -28,12 +28,26 @@ apiRouter.post("/authenticate", (req, res) => {
           message: "Auth failed. User pw wrong."
         });
       }else{
-        const token = jwt.sign(user.name, config.jwtsecret);
-        res.json({
-          success: true,
-          message: "Auth Success. Token attached",
-          token:token
+        const tokenOptions = {
+          issuer: "TestServer",
+          expiresIn: "10h"
+        };
+        const tokenPayload = {
+          username: user.name,
+          issuedAt: new Date().toLocaleString()
+        };
+        jwt.sign(tokenPayload, config.jwtsecret, tokenOptions, (err, token) => {
+          if(err){
+            return console.error(err);
+          }
+          res.json({
+            success: true,
+            message: "Auth Success. Token attached",
+            token: token
+          });
         });
+
+
       }
     }
   });
@@ -46,10 +60,14 @@ function isAuthJwt(req, res, next){
   if(token){
     jwt.verify(token, config.jwtsecret, (err, decoded) => {
       if(err)
-        return res.json({success: false, message: "Token Auth Failed"});
+        if(err.name === "TokenExpiredError"){
+          return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
+        }else{
+          return res.json({success: false, message: "Token Auth Failed"});
+        }
       else{
-        req.decoded = decoded;
-        console.log("JWT VERIFY cb value. isAuthJWT Scope: %s", decoded);
+        // req.decoded = decoded;
+        // console.log("JWT VERIFY cb value. isAuthJWT Scope: %s", decoded);
         req.body.token = token;
         next();
       }
@@ -83,6 +101,10 @@ apiRouter.get("/items", isAuthJwt, (req, res) => {
       return res.send(err);
     res.json({token: req.body.token, items: items});
   });
+});
+
+apiRouter.get("/edit", isAuthJwt, (req, res) => {
+  res.render("edit");
 });
 
 apiRouter.post("/items", isAuthJwt, (req, res) => {

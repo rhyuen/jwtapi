@@ -15,7 +15,13 @@ $(document).ready(function(){
     event.preventDefault();
     var new_item_val = $("input[name='newitemname']").val();
     var new_quantity_val = $("input[name='quantity']").val();
-    var payload = {newitemname: new_item_val, quantity: new_quantity_val, token: sessionStorage.getItem("token")};
+
+    var payload = {
+      newitemname: new_item_val,
+      quantity: new_quantity_val,
+      token: sessionStorage.getItem("token")
+    };
+
     $.post("/api/items", payload, function(response){
       $("#recently_added .content").append($("<p/>", {text: response.item.itemName  + " " + response.item.quantity + " " + response.item.owner}));
       $("input[name='newitemname']").val("");

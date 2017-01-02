@@ -12,6 +12,25 @@ router.get("/setup", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/register.html"));
 });
 
+router.get("/browse", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/views/browse.html"));
+});
+
+router.get("/user/:id", (req, res) => {
+  // let userId = req.params.id;
+  // User.findById({id: userId}, (err, foundUser) => {
+  //   if(err)
+  //     res.json({message: err});
+  //   else{
+  //     res.json({message: "Found a matching user"});
+  //      res.render("publicprofile", {});
+  //   }
+  // });
+  console.log("Request URL");
+  console.log("URL USER ID: %s", req.params.id);
+  res.json({message: "Mountain Blade, PARAMID: " + req.params.id, "requestURL": req.originalUrl});
+});
+
 router.post("/setup", (req, res) => {
 
   var currUser = new User();
@@ -20,9 +39,11 @@ router.post("/setup", (req, res) => {
   currUser.admin = true;
 
   currUser.save(function(err, user){
-    if(err)
-      throw err;
-    res.json({success: true, data: user});
+    if(err){
+      return console.error("[%s] ERROR: %s", new Date().toLocaleString(), err);
+    }else{
+      res.redirect("/");
+    }          
   });
 });
 

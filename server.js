@@ -34,7 +34,7 @@ app.use(morgan("dev"));
 app.use("/", routes);
 app.use("/api", apiRoutes);
 
-app.listen(app.get("PORT"), function(){
+app.listen(app.get("PORT"), () => {
   console.log("[%s] App started. PORT: %s", new Date().toLocaleString(), app.get("PORT") );
 });
 
