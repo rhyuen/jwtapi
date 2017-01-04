@@ -1,8 +1,9 @@
 const express = require("express");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 const User = require("./models/user.js");
 const Item = require("./models/item.js");
-const jwt = require("jsonwebtoken");
+const Post = require("./models/post.js");
 const config = require("./config.js");
 
 const apiRouter = express.Router();
@@ -81,6 +82,7 @@ function isAuthJwt(req, res, next){
 }
 
 apiRouter.get("/users", isAuthJwt, (req, res) => {
+
   User.find({}, (err, users) => {
     if(err)
       return res.send(err);
@@ -89,9 +91,7 @@ apiRouter.get("/users", isAuthJwt, (req, res) => {
 });
 
 apiRouter.get("/user", isAuthJwt, (req, res) => {
-
   res.render("user");
-  //res.sendFile(path.join(__dirname, "public/views/user.html"));
 });
 
 //ONLY GETS ITEMS BASED ON USER's TOKEN.
@@ -107,6 +107,33 @@ apiRouter.get("/edit", isAuthJwt, (req, res) => {
   res.render("edit");
 });
 
+
+apiRouter.get("/posts", isAuthJwt, (req, res) => {
+  Post.find({user: req.decoded}, (err, posts) => {
+    if(err){
+      console.error("[%s] %s", new Date().toLocaleString(), err);
+      return res.json({status: "Error", message: "Something is amiss in the force."});
+    }
+    res.json({message: "SUCCESS. Posts retrieved.", post: posts});
+  });
+});
+
+apiRouter.post("/posts", isAuthJwt, (req, res) => {
+  var newPost = new Post();
+  newPost.title = req.body.form_title;
+  newPost.body = req.body.form_post;
+  console.log(req.decoded);
+  newPost.user = req.decoded;
+  newPost.tags = req.body.form_tags;
+  newPost.save((err, latestPost)=>{
+    if(err){
+      console.error("[%s] %s", new Date().toLocaleString(), err);
+      return res.json({status: "Error", message: "Something is amiss in the force."});
+    }
+    res.json({message: "New Post Added.", post: latestPost});
+  });
+});
+
 apiRouter.post("/items", isAuthJwt, (req, res) => {
    var currItem = new Item();
    currItem.itemName = req.body.newitemname;
@@ -120,6 +147,7 @@ apiRouter.post("/items", isAuthJwt, (req, res) => {
 });
 
 apiRouter.get("/logout", (req, res) => {
+  //Expire the User's Token.
   res.redirect("/");
 });
 
