@@ -22,7 +22,6 @@ apiRouter.post("/authenticate", (req, res) => {
         message: "Auth failed.  User doesn't exist."
       });
     else{
-
       if(!user.validPassword(req.body.password)){
         res.json({
           success: false,
@@ -33,9 +32,9 @@ apiRouter.post("/authenticate", (req, res) => {
           issuer: "TestServer",
           expiresIn: "10h"
         };
-        const tokenPayload = {
-          username: user.name,
-          issuedAt: new Date().toLocaleString()
+        console.log("USERNAME: %s",  user.name);
+        var tokenPayload = {
+          username: user.name
         };
         jwt.sign(tokenPayload, config.jwtsecret, tokenOptions, (err, token) => {
           if(err){
@@ -47,8 +46,6 @@ apiRouter.post("/authenticate", (req, res) => {
             token: token
           });
         });
-
-
       }
     }
   });
@@ -61,14 +58,14 @@ function isAuthJwt(req, res, next){
   if(token){
     jwt.verify(token, config.jwtsecret, (err, decoded) => {
       if(err)
-        if(err.name === "TokenExpiredError"){
-          return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
-        }else{
-          return res.json({success: false, message: "Token Auth Failed"});
-        }
+        // if(err.name === "TokenExpiredError"){
+        //   return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
+        // }else{
+        //   return res.json({success: false, message: "Token Auth Failed"});
+        // }
+        console.log(err);
       else{
-        // req.decoded = decoded;
-        // console.log("JWT VERIFY cb value. isAuthJWT Scope: %s", decoded);
+        req.decoded = decoded;
         req.body.token = token;
         next();
       }
@@ -109,7 +106,9 @@ apiRouter.get("/edit", isAuthJwt, (req, res) => {
 
 
 apiRouter.get("/posts", isAuthJwt, (req, res) => {
-  Post.find({user: req.decoded}, (err, posts) => {
+  console.log("POST REQ DECODED: %s", req.decoded);
+  console.dir(req.decoded);
+  Post.find({user: req.decoded.username}, (err, posts) => {
     if(err){
       console.error("[%s] %s", new Date().toLocaleString(), err);
       return res.json({status: "Error", message: "Something is amiss in the force."});
@@ -119,11 +118,13 @@ apiRouter.get("/posts", isAuthJwt, (req, res) => {
 });
 
 apiRouter.post("/posts", isAuthJwt, (req, res) => {
+  console.log("POSTS hit");
+  console.log(req.body);
   var newPost = new Post();
   newPost.title = req.body.form_title;
   newPost.body = req.body.form_post;
-  console.log(req.decoded);
-  newPost.user = req.decoded;
+  console.log("REQ DECODED: %s", req.decoded);
+  newPost.user = req.decoded.username;
   newPost.tags = req.body.form_tags;
   newPost.save((err, latestPost)=>{
     if(err){
