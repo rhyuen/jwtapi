@@ -34,7 +34,9 @@ apiRouter.post("/authenticate", (req, res) => {
         };
         console.log("USERNAME: %s",  user.name);
         var tokenPayload = {
-          username: user.name
+          username: user.name,
+          jti: "34343409",
+          iat: Math.floor(Date.now()/1000)
         };
         jwt.sign(tokenPayload, config.jwtsecret, tokenOptions, (err, token) => {
           if(err){
@@ -58,12 +60,12 @@ function isAuthJwt(req, res, next){
   if(token){
     jwt.verify(token, config.jwtsecret, (err, decoded) => {
       if(err)
-        // if(err.name === "TokenExpiredError"){
-        //   return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
-        // }else{
-        //   return res.json({success: false, message: "Token Auth Failed"});
-        // }
-        console.log(err);
+        if(err.name === "TokenExpiredError"){
+          return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
+        }else{
+          return res.json({success: false, message: "Token Auth Failed"});
+        }
+        //console.log(err);
       else{
         req.decoded = decoded;
         req.body.token = token;
@@ -78,12 +80,12 @@ function isAuthJwt(req, res, next){
   }
 }
 
-apiRouter.get("/users", isAuthJwt, (req, res) => {
+apiRouter.get("/users", (req, res) => {
 
   User.find({}, (err, users) => {
     if(err)
       return res.send(err);
-    res.json({users: users, token: req.body.token});
+    res.json({users: users});
   });
 });
 

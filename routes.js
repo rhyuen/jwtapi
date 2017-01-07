@@ -1,6 +1,8 @@
 const express = require("express");
-const User = require("./models/user.js");
 const path = require("path");
+const User = require("./models/user.js");
+const Post = require("./models/post.js");
+
 
 const router = express.Router();
 
@@ -16,19 +18,25 @@ router.get("/browse", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/browse.html"));
 });
 
-router.get("/user/:id", (req, res) => {
-  // let userId = req.params.id;
-  // User.findById({id: userId}, (err, foundUser) => {
-  //   if(err)
-  //     res.json({message: err});
-  //   else{
-  //     res.json({message: "Found a matching user"});
-  //      res.render("publicprofile", {});
-  //   }
-  // });
-  console.log("Request URL");
-  console.log("URL USER ID: %s", req.params.id);
-  res.json({message: "Mountain Blade, PARAMID: " + req.params.id, "requestURL": req.originalUrl});
+router.get("/user/:name", (req, res) => {
+
+  User.find({name: req.params.name}, (err, user) => {
+    if(err)
+      console.log(err);
+    //USER NOT FOUND CASE
+    if(user.length === 0){
+      return res.render("public_user_profile", {
+        username: "A disturbance in the force there is.",
+        tags: "The dark side is strong in you, young padawan.",
+        postCount: "Midichlorians, there are none."
+      });
+    }
+    res.render("public_user_profile", {
+      username: user.name,
+      tags: "tagsAreHere",
+      postCount: 10
+    });
+  });
 });
 
 router.post("/setup", (req, res) => {
@@ -43,8 +51,12 @@ router.post("/setup", (req, res) => {
       return console.error("[%s] ERROR: %s", new Date().toLocaleString(), err);
     }else{
       res.redirect("/");
-    }          
+    }
   });
+});
+
+router.get("/error", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/views/error.html"));
 });
 
 module.exports = router;

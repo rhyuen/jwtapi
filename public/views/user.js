@@ -32,7 +32,8 @@ $(document).ready(function(){
     };
 
     $.post("/api/items", payload, function(response){
-      $("#recently_added .content").append($("<p/>", {text: response.item.itemName  + " " + response.item.quantity + " " + response.item.owner}));
+      $("#recently_added .content")
+        .append($("<p/>", {text: response.item.itemName  + " " + response.item.quantity + " " + response.item.owner}));
       $("input[name='newitemname']").val("");
       $("input[name='quantity']").val("");
     });
@@ -52,6 +53,7 @@ $(document).ready(function(){
     };
 
     $.post("/api/posts", post_payload, function(response){
+
       $("input[name='formTitle']").val("");
       $("input[name='formPost']").val("");
       $("input[name='formTags']").val("");
