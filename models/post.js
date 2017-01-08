@@ -5,7 +5,7 @@ const postSchema = mongoose.Schema({
   user: {type: String, required: true},
   tags: String
 }, {
-  timeStamps: {
+  timestamps: {
     createdAt: "created_at"
   }
 });

@@ -1,10 +1,12 @@
 const express = require("express");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const validator = require("validator");
 const User = require("./models/user.js");
 const Item = require("./models/item.js");
 const Post = require("./models/post.js");
 const config = require("./config.js");
+
 
 const apiRouter = express.Router();
 
@@ -13,7 +15,9 @@ apiRouter.get("/", (req, res) => {
 });
 
 apiRouter.post("/authenticate", (req, res) => {
-  User.findOne({name: req.body.name}, (err, user) => {
+  let cleanFormName = validator.escape(req.body.name);
+  console.log("AUTH ESCAPE TEST: " + cleanFormName);
+  User.findOne({name: cleanFormName}, (err, user) => {
     if(err)
       throw err;
     if(!user)

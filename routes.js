@@ -1,7 +1,9 @@
 const express = require("express");
 const path = require("path");
+const validator = require("validator");
 const User = require("./models/user.js");
 const Post = require("./models/post.js");
+
 
 
 const router = express.Router();
@@ -19,8 +21,8 @@ router.get("/browse", (req, res) => {
 });
 
 router.get("/user/:name", (req, res) => {
-
-  User.find({name: req.params.name}, (err, user) => {
+  let cleanURLParam = validator.escape(req.params.name);
+  User.find({name: cleanURLParam}, (err, user) => {
     if(err)
       console.log(err);
     //USER NOT FOUND CASE
@@ -42,7 +44,7 @@ router.get("/user/:name", (req, res) => {
 router.post("/setup", (req, res) => {
 
   var currUser = new User();
-  currUser.name = req.body.newusername;
+  currUser.name = validator.escape(req.body.newusername);
   currUser.password =  currUser.generateHash(req.body.newpassword);
   currUser.admin = true;
 

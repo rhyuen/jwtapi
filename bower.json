@@ -1,0 +1,21 @@
+{
+  "name": "jwtagain",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Robert Yuen <dungeonry@hotmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/rhyuen/jwtapi",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "validator-js": "^6.2.1"
+  }
+}

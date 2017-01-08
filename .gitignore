@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 keys.json
 uploaded/*
+bower_components

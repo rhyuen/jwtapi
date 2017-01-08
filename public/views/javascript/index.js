@@ -15,13 +15,19 @@ $(document).ready(function(){
   formName.css({"background-color": "pink"});
   formPassword.css({"background-color": "orange"});
 
+
+
   $("form").submit(function(e){
     e.preventDefault();
-    $.post("/api/authenticate", {name: formName.val(), password: formPassword.val()}, function(data){
+
+    var cleanFormName = validator.escape(formName.val());
+
+    $.post("/api/authenticate", {name: cleanFormName, password: formPassword.val()}, function(data){
       localStorage.setItem("token", data.token);
       sessionStorage.setItem("token", data.token);
 
-        $(location).attr("href", "/api/user?token=" + localStorage.getItem("token"));
+
+      $(location).attr("href", "/api/user?token=" + localStorage.getItem("token"));
 
       //WEBSTOREAGE Token to LocalStorage or SessionStorage
       //XSS VULN
