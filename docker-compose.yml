@@ -1,0 +1,24 @@
+version: 0.1
+services:
+  web:
+    build:
+    ports:
+      - "8080:9899"
+    links:
+      - "db:mongo"
+    command: npm start
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+    volumes:
+      - /www/public
+    volumes_from:
+      - web
+    links:
+      - web:web
+
+  db:
+    image: mongo

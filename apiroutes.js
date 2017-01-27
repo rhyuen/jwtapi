@@ -38,6 +38,7 @@ apiRouter.post("/authenticate", (req, res) => {
         };
         console.log("USERNAME: %s",  user.name);
         var tokenPayload = {
+          //Add a "sub" field for user ID.
           username: user.name,
           jti: "34343409",
           iat: Math.floor(Date.now()/1000)
@@ -107,7 +108,19 @@ apiRouter.get("/items", isAuthJwt, (req, res) => {
 });
 
 apiRouter.get("/edit", isAuthJwt, (req, res) => {
-  res.render("edit");
+  User.find({name: req.decoded}, (err, foundUser) => {
+    if(err)
+      return res.sendFile(path.join(__dirname, "public/views/error.html"));
+    else{
+      return res.render("edit", {
+        name: name
+      });
+    }
+  });
+});
+
+apiRouter.post("/edit", isAuthJwt, (req, res) => {
+
 });
 
 

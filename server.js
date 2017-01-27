@@ -6,6 +6,8 @@ const morgan = require("morgan");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
+const compression = require("compression");
+const cookieParser = require("cookie-parser");
 const exphbs = require("express-handlebars");
 
 const config = require("./config.js");
@@ -15,11 +17,23 @@ const apiRoutes = require("./apiroutes.js");
 
 app.set("PORT", process.env.PORT|| 9899);
 mongoose.connect(config.db, (err) => {
-  console.log("[%s] DB CONN ATTEMPT", new Date().toLocaleString());
+  if(err){
+    console.error("[%s] DB CONN ERROR: %s", new Date().toLocaleString(), err);
+  }else{
+    console.log("[%s] DB CONN ATTEMPT", new Date().toLocaleString());
+  }
 });
 mongoose.connection.once("open", () => {
   console.log("[%s] DB CONN SUCCESS", new Date().toLocaleString());
 });
+mongoose.connection.on("error", (err) => {
+  console.log("[%s][Mongoose Err]", new Date().toLocaleString(), err);
+});
+app.use(cookieParser());
+app.use(compression({
+  level: 5
+}));
+app.use(helmet());
 app.use(express.static(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "public/views"));
 app.engine(".hbs", exphbs({
@@ -28,7 +42,6 @@ app.engine(".hbs", exphbs({
 app.set("view engine", ".hbs");
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/", routes);

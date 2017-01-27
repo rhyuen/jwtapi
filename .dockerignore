@@ -1,4 +1,5 @@
 node_modules
-npm-debug.log
+npm-debug.log*
 node-modules
 keys.json
+nodemon.json
