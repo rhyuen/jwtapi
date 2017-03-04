@@ -5,6 +5,10 @@ const userSchema = mongoose.Schema({
   name: String,
   password: String,
   admin: Boolean
+}, {
+  timestamps: {
+    createdAt: "created_at"
+  }
 });
 
 userSchema.methods.generateHash = (password) => {

@@ -1,11 +1,13 @@
+"use strict";
+
 const express = require("express");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const User = require("./models/user.js");
-const Item = require("./models/item.js");
 const Post = require("./models/post.js");
 const config = require("./config.js");
+const auth = require("./auth.js");
 
 
 const apiRouter = express.Router();
@@ -16,10 +18,9 @@ apiRouter.get("/", (req, res) => {
 
 apiRouter.post("/authenticate", (req, res) => {
   let cleanFormName = validator.escape(req.body.name);
-  console.log("AUTH ESCAPE TEST: " + cleanFormName);
+
   User.findOne({name: cleanFormName}, (err, user) => {
-    if(err)
-      throw err;
+    if(err) throw err;
     if(!user)
       res.json({
         success: false,
@@ -47,11 +48,17 @@ apiRouter.post("/authenticate", (req, res) => {
           if(err){
             return console.error(err);
           }
-          res.json({
-            success: true,
-            message: "Auth Success. Token attached",
-            token: token
+          // res.json({
+          //   success: true,
+          //   message: "Auth Success. Token attached",
+          //   token: token
+          // });
+
+          res.cookie("id_token", token, {
+            expires: new Date(Date.now() + 36000),
+            httpOnly: true
           });
+          res.send(200, {message: "cookie set."});
         });
       }
     }
@@ -60,33 +67,35 @@ apiRouter.post("/authenticate", (req, res) => {
 
 
 
-function isAuthJwt(req, res, next){
-  const token = req.body.token || req.query.token ||req.headers["x-access-token"];
-  if(token){
-    jwt.verify(token, config.jwtsecret, (err, decoded) => {
-      if(err)
-        if(err.name === "TokenExpiredError"){
-          return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
-        }else{
-          return res.json({success: false, message: "Token Auth Failed"});
-        }
-        //console.log(err);
-      else{
-        req.decoded = decoded;
-        req.body.token = token;
-        next();
-      }
-    });
-  }else{
-    return res.status(403).json({
-      success:false,
-      message: "Auth failed. No token provided."
-    });
-  }
-}
+// function isAuthJwt(req, res, next){
+//   const token = req.body.token || req.query.token ||req.headers["x-access-token"];
+//   if(token){
+//     jwt.verify(token, config.jwtsecret, (err, decoded) => {
+//       if(err)
+//         if(err.name === "TokenExpiredError"){
+//           return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
+//         }else{
+//           return res.json({success: false, message: "Token Auth Failed"});
+//         }
+//       else{
+//         req.decoded = decoded;
+//         req.body.token = token;
+//         next();
+//       }
+//     });
+//   }else{
+//     return res.status(403).json({
+//       success:false,
+//       message: "Auth failed. No token provided."
+//     });
+//   }
+// }
+//
+// function isCookieAuthJWT(req, res, next){
+//
+// }
 
 apiRouter.get("/users", (req, res) => {
-
   User.find({}, (err, users) => {
     if(err)
       return res.send(err);
@@ -94,37 +103,34 @@ apiRouter.get("/users", (req, res) => {
   });
 });
 
-apiRouter.get("/user", isAuthJwt, (req, res) => {
+apiRouter.get("/user", auth.isCookieAuthJWT, (req, res) => {
   res.render("user");
 });
 
-//ONLY GETS ITEMS BASED ON USER's TOKEN.
-apiRouter.get("/items", isAuthJwt, (req, res) => {
-  Item.find({owner: req.decoded}, (err, items) => {
-    if(err)
-      return res.send(err);
-    res.json({token: req.body.token, items: items});
-  });
-});
 
-apiRouter.get("/edit", isAuthJwt, (req, res) => {
-  User.find({name: req.decoded}, (err, foundUser) => {
-    if(err)
+apiRouter.get("/edit", auth.isCookieAuthJWT, (req, res) => {
+  console.log("EDIT PATH");
+  console.log(req.decoded);
+  var zeName = req.decoded.username.toString();
+  User.findOne({name: zeName}, (err, foundUser) => {
+    if(err){
+      console.log(err);
       return res.sendFile(path.join(__dirname, "public/views/error.html"));
+    }
     else{
       return res.render("edit", {
-        name: name
+        name: foundUser.name
       });
     }
   });
 });
 
-apiRouter.post("/edit", isAuthJwt, (req, res) => {
+apiRouter.post("/edit", auth.isCookieAuthJWT, (req, res) => {
 
 });
 
 
-apiRouter.get("/posts", isAuthJwt, (req, res) => {
+apiRouter.get("/posts", auth.isCookieAuthJWT, (req, res) => {
   console.log("POST REQ DECODED: %s", req.decoded);
   console.dir(req.decoded);
   Post.find({user: req.decoded.username}, (err, posts) => {
@@ -136,15 +142,15 @@ apiRouter.get("/posts", isAuthJwt, (req, res) => {
   });
 });
 
-apiRouter.post("/posts", isAuthJwt, (req, res) => {
-  console.log("POSTS hit");
-  console.log(req.body);
-  var newPost = new Post();
-  newPost.title = req.body.form_title;
-  newPost.body = req.body.form_post;
-  console.log("REQ DECODED: %s", req.decoded);
-  newPost.user = req.decoded.username;
-  newPost.tags = req.body.form_tags;
+apiRouter.post("/posts", auth.isCookieAuthJWT, (req, res) => {
+
+  var newPost = new Post({
+    title: req.body.form_title,
+    body: req.body.form_post,
+    user: req.decoded.username,
+    tags: req.body.form_tags
+  });
+
   newPost.save((err, latestPost)=>{
     if(err){
       console.error("[%s] %s", new Date().toLocaleString(), err);
@@ -154,20 +160,12 @@ apiRouter.post("/posts", isAuthJwt, (req, res) => {
   });
 });
 
-apiRouter.post("/items", isAuthJwt, (req, res) => {
-   var currItem = new Item();
-   currItem.itemName = req.body.newitemname;
-   currItem.quantity = req.body.quantity;
-   currItem.owner = req.decoded;
-   currItem.save(function(err, latestItem){
-    if(err)
-      return res.send(err);
-    res.json({message: "New Item added.", item: latestItem});
-  });
-});
 
 apiRouter.get("/logout", (req, res) => {
-  //Expire the User's Token.
+  res.cookie("id_token", "LOGGEDOUT", {
+    expires: new Date(Date.now() - 36000),
+    httpOnly: true
+  });
   res.redirect("/");
 });
 

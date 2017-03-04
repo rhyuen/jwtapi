@@ -1,6 +1,4 @@
 $(document).ready(function(){
-  console.log("SessionStorage TOKEN VALUE: %s", sessionStorage.getItem("token"));
-  console.log("LocalStorage TOKEN VALUE: %s", localStorage.getItem("token"));
 
   //ONLOAD
   $.get("/api/posts", {token: sessionStorage.getItem("token")}, function(res){
@@ -12,10 +10,12 @@ $(document).ready(function(){
     });
   });
 
-  // $("a").click(function(event){    
-  //
-  //   $(location).attr("href", $(this).href() + "/?token=" + localStorage.getItem("token"));
-  // });
+  //you CANNOT SET a header field with a REGULAR LINK
+  //ONE SUGGESTION: USE EXPRESS MIDDLE WARE.
+  $("#edit-button").click(function(event){
+    event.preventDefault();
+    $(location).attr("href", $("#edit-button").attr("href"));
+  });
 
   $("#new_post_form").submit(function(event){
     event.preventDefault();
@@ -31,16 +31,9 @@ $(document).ready(function(){
     };
 
     $.post("/api/posts", post_payload, function(response){
-      //Append on success.
       $("input[name='formTitle']").val("");
       $("input[name='formPost']").val("");
       $("input[name='formTags']").val("");
     });
-  });
-
-
-  $("#logout").click(function(){
-    localStorage.clear();
-    sessionStorage.clear();
   });
 });

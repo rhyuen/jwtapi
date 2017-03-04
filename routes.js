@@ -45,12 +45,12 @@ router.get("/user/:name", (req, res) => {
 
 router.post("/setup", (req, res) => {
 
-  var currUser = new User();
+  let currUser = new User();
   currUser.name = validator.escape(req.body.newusername);
-  currUser.password =  currUser.generateHash(req.body.newpassword);
+  currUser.password = currUser.generateHash(req.body.newpassword);
   currUser.admin = true;
 
-  currUser.save(function(err, user){
+  currUser.save((err, user) => {
     if(err){
       return console.error("[%s] ERROR: %s", new Date().toLocaleString(), err);
     }else{
@@ -62,5 +62,6 @@ router.post("/setup", (req, res) => {
 router.get("/error", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/error.html"));
 });
+
 
 module.exports = router;

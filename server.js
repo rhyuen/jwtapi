@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -29,7 +31,10 @@ mongoose.connection.once("open", () => {
 mongoose.connection.on("error", (err) => {
   console.log("[%s][Mongoose Err]", new Date().toLocaleString(), err);
 });
-app.use(cookieParser());
+app.use(cookieParser(config.cookieSecret, {
+  httpOnly: true,
+  maxAge: 3600
+}));
 app.use(compression({
   level: 5
 }));
@@ -47,9 +52,14 @@ app.use(morgan("dev"));
 app.use("/", routes);
 app.use("/api", apiRoutes);
 
-app.listen(app.get("PORT"), () => {
-  console.log("[%s] App started. PORT: %s", new Date().toLocaleString(), app.get("PORT") );
+app.get("*", (req, res) => {
+  res.redirect("/");
 });
 
-// req.headers['authorization'] &&
-// req.headers['authorization'].startsWith('JWT'))
+app.listen(app.get("PORT"), (err) => {
+  if(err){
+    console.error("ERROR");
+  }else{
+    console.log("[%s] App started. PORT: %s", new Date().toLocaleString(), app.get("PORT") );
+  }
+});
