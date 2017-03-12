@@ -1,7 +1,7 @@
 
 $(document).ready(function(){
 
-  if(document.referrer.includes("setup")){
+  if(document.referrer.includes("register")){
     $("#redirect_message").css({visibility: "visible"});
   }else{
     $("#redirect_message").css({visibility: "hidden"});
@@ -19,11 +19,6 @@ $(document).ready(function(){
 
     $.post("/api/authenticate", {name: cleanFormName, password: formPassword.val()}, function(data){
       $(location).attr("href", "/api/user");
-
-      //WEBSTOREAGE Token to LocalStorage or SessionStorage
-      //XSS VULN
-      //Authorization: Bearer + data.token;
-      //document.cookie = data.token; //there's other stuff in the cookie as well.
     });
   });
 });

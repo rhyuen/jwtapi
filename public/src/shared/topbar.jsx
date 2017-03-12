@@ -11,11 +11,14 @@ class TopBar extends Component{
   render(){
     return (
       <div>
-        <div>HOME</div>
-        <div>Search</div>
-        <div>Profile</div>
+        <div><a href = "/">HOME</a></div>
+        <div><a href = "/browse">Search</a></div>
+        <div><a href = "/browse">Browse</a></div>
+        <div><a href = "/user">Profile</a></div>
+        <div><a href = "/register">Signup</a></div>
+        <div><a href = "/logout">Logout</a></div>
       </div>
-    )
+    );
   }
 }
 

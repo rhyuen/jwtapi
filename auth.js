@@ -28,8 +28,6 @@ const jwt = require("jsonwebtoken");
 // };
 
 exports.isCookieAuthJWT = (req, res, next) => {
-  console.log("YOUR JWT in your COOKIE IS: %s", req.cookies.id_token);
-  console.log("COOKIE AUTH.");
   const token = req.cookies.id_token;
   if(token){
     jwt.verify(token, config.jwtsecret, (err, decoded) => {
@@ -46,9 +44,10 @@ exports.isCookieAuthJWT = (req, res, next) => {
       }
     });
   }else{
-    return res.status(403).json({
-      success:false,
-      message: "Auth failed. No token provided."
-    });
+    // return res.status(403).json({
+    //   success:false,
+    //   message: "Auth failed. No token provided."
+    // });
+    return res.status(403).redirect("/");
   }
 };

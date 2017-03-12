@@ -63,3 +63,5 @@ app.listen(app.get("PORT"), (err) => {
     console.log("[%s] App started. PORT: %s", new Date().toLocaleString(), app.get("PORT") );
   }
 });
+
+module.exports = app;

@@ -12,10 +12,6 @@ const auth = require("./auth.js");
 
 const apiRouter = express.Router();
 
-apiRouter.get("/", (req, res) => {
-  res.json({message: "User API Routes"});
-});
-
 apiRouter.post("/authenticate", (req, res) => {
   let cleanFormName = validator.escape(req.body.name);
 
@@ -58,42 +54,12 @@ apiRouter.post("/authenticate", (req, res) => {
             expires: new Date(Date.now() + 36000),
             httpOnly: true
           });
-          res.send(200, {message: "cookie set."});
+          res.status(200).send({message: "cookie set."});
         });
       }
     }
   });
 });
-
-
-
-// function isAuthJwt(req, res, next){
-//   const token = req.body.token || req.query.token ||req.headers["x-access-token"];
-//   if(token){
-//     jwt.verify(token, config.jwtsecret, (err, decoded) => {
-//       if(err)
-//         if(err.name === "TokenExpiredError"){
-//           return res.json({success: false, message: err.message, expiredAt: err.expiredAt});
-//         }else{
-//           return res.json({success: false, message: "Token Auth Failed"});
-//         }
-//       else{
-//         req.decoded = decoded;
-//         req.body.token = token;
-//         next();
-//       }
-//     });
-//   }else{
-//     return res.status(403).json({
-//       success:false,
-//       message: "Auth failed. No token provided."
-//     });
-//   }
-// }
-//
-// function isCookieAuthJWT(req, res, next){
-//
-// }
 
 apiRouter.get("/users", (req, res) => {
   User.find({}, (err, users) => {
@@ -131,8 +97,6 @@ apiRouter.post("/edit", auth.isCookieAuthJWT, (req, res) => {
 
 
 apiRouter.get("/posts", auth.isCookieAuthJWT, (req, res) => {
-  console.log("POST REQ DECODED: %s", req.decoded);
-  console.dir(req.decoded);
   Post.find({user: req.decoded.username}, (err, posts) => {
     if(err){
       console.error("[%s] %s", new Date().toLocaleString(), err);

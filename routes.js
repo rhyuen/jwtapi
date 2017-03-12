@@ -11,10 +11,14 @@ const Post = require("./models/post.js");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/views/index.html"));
+  if(req.cookies.id_token){
+    res.redirect("/api/user");
+  }else{
+    res.sendFile(path.join(__dirname, "public/views/index.html"));
+  }
 });
 
-router.get("/setup", (req, res) => {
+router.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/register.html"));
 });
 
@@ -43,7 +47,7 @@ router.get("/user/:name", (req, res) => {
   });
 });
 
-router.post("/setup", (req, res) => {
+router.post("/register", (req, res) => {
 
   let currUser = new User();
   currUser.name = validator.escape(req.body.newusername);
