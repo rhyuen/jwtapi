@@ -130,6 +130,7 @@ apiRouter.get("/logout", (req, res) => {
     expires: new Date(Date.now() - 36000),
     httpOnly: true
   });
+  //res.clearCookie("id_token", {path: "/"});
   res.redirect("/");
 });
 

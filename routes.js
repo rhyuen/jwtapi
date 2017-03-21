@@ -14,16 +14,16 @@ router.get("/", (req, res) => {
   if(req.cookies.id_token){
     res.redirect("/api/user");
   }else{
-    res.sendFile(path.join(__dirname, "public/views/index.html"));
+    res.status(200).sendFile(path.join(__dirname, "public/views/index.html"));
   }
 });
 
 router.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/views/register.html"));
+  res.status(200).sendFile(path.join(__dirname, "public/views/register.html"));
 });
 
 router.get("/browse", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/views/browse.html"));
+  res.status(200).sendFile(path.join(__dirname, "public/views/browse.html"));
 });
 
 router.get("/user/:name", (req, res) => {
@@ -61,6 +61,17 @@ router.post("/register", (req, res) => {
       res.redirect("/");
     }
   });
+});
+
+router.get("/forgot", (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, "public/views/forgot.html"));
+});
+
+router.post("/forgot", (req, res) => {
+  let cleanedEmail = validator.escape(req.body.forgot_email_address);
+  console.log(cleanedEmail);
+  require("./email.js")(cleanedEmail);
+  res.redirect("/");
 });
 
 router.get("/error", (req, res) => {

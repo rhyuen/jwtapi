@@ -6,8 +6,8 @@
   "scripts": {
     "test": "mocha",
     "build": "webpack",
-    "start": "nodemon server.js",
-    "prod": "forever start server.js",
+    "start": "set NODE_ENV=development && nodemon server.js",
+    "prod": "set NODE_ENV=production && forever start server.js",
     "dev": "webpack --watch"
   },
   "keywords": [],
@@ -26,6 +26,7 @@
     "mongoose": "4.7.2",
     "morgan": "1.7.0",
     "nconf": "0.8.4",
+    "nodemailer": "^3.1.7",
     "path": "0.12.7",
     "validator": "^6.2.1"
   },

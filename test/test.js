@@ -8,8 +8,11 @@ const mongoose = require("mongoose");
 const config = require("../config.js");
 const User = require("../models/user.js");
 const server = require("../server.js");
+//for Cookie Retention
+
 
 chai.use(chaiHttp);
+let agent = chai.request.agent(server);
 
 describe("Home Page", () => {
   it("should return 200", (done) => {
@@ -21,12 +24,33 @@ describe("Home Page", () => {
       });
   });
 
+  it("should Log the User in", (done) => {
+    chai.request(server)
+      .post("/")
+      .field("name", "NewestUserName")
+      .field("password", "NewestPassword")
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+      });
+  });
 });
 
 describe("Register Page", () => {
   it("should return 200", (done) => {
     chai.request(server)
       .get("/register")
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it("should CREATE a new Account", (done) => {
+    chai.request(server)
+      .post("/register")
+      .field("newusername", "NewestUserName")
+      .field("newpassword", "NewestPassword")
       .end((err, res) => {
         res.should.have.status(200);
         done();
@@ -42,6 +66,17 @@ describe("User Page", () => {
         .end((err, res) => {
           res.should.have.status(403);
           res.should.not.have.status(200);
+          done();
+        });
+  });
+});
+
+describe("Forgot Password Page", () => {
+  it("should return 200", (done) => {
+      chai.request(server)
+        .get("/forgot")
+        .end((err, res) => {
+          res.should.have.status(200);
           done();
         });
   });
@@ -87,7 +122,7 @@ describe("User Page", () => {
 //
 //   //Don't forget to remove this part.  It deletes all of the users.
 //   afterEach((done) => {
-//     User.remove({}, (err, deletedUser) => {
+//     User.remove({name: newUser.name}, (err, deletedUser) => {
 //       if(err){
 //         console.log(err);
 //       }else{

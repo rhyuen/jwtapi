@@ -18,7 +18,13 @@ const User = require("./models/user.js");
 const apiRoutes = require("./apiroutes.js");
 
 app.set("PORT", process.env.PORT|| 9899);
-mongoose.connect(config.db, (err) => {
+const mongooseServerOptions = {
+  server: {
+    auto_reconnect: true,
+    reconnectTries: Number.MAX_VALUE
+  }
+};
+mongoose.connect(config.db, mongooseServerOptions, (err) => {
   if(err){
     console.error("[%s] DB CONN ERROR: %s", new Date().toLocaleString(), err);
   }else{
@@ -26,10 +32,19 @@ mongoose.connect(config.db, (err) => {
   }
 });
 mongoose.connection.once("open", () => {
-  console.log("[%s] DB CONN SUCCESS", new Date().toLocaleString());
+  console.log("[%s] DB CONN open", new Date().toLocaleString());
 });
 mongoose.connection.on("error", (err) => {
-  console.log("[%s][Mongoose Err]", new Date().toLocaleString(), err);
+  console.log("[%s][MONGOOSE ERR] %s", new Date().toLocaleString(), err);
+});
+mongoose.connection.on("connected", () => {
+  console.info("[%s] DB CONN connected", new Date().toLocaleString());
+});
+mongoose.connection.on("disconnected", () => {
+  console.error("[%s] DB disconnected", new Date().toLocaleString());
+});
+mongoose.connection.on("reconnected", () => {
+  console.info("[%s] DB reconnected", new Date().toLocaleString());
 });
 app.use(cookieParser(config.cookieSecret, {
   httpOnly: true,
@@ -58,9 +73,12 @@ app.get("*", (req, res) => {
 
 app.listen(app.get("PORT"), (err) => {
   if(err){
-    console.error("ERROR");
+    console.error("ERROR: %s", err);
   }else{
-    console.log("[%s] App started. PORT: %s", new Date().toLocaleString(), app.get("PORT") );
+    console.log("[%s] App started. \n\tPORT: %s\n\tENV: %s",
+      new Date().toLocaleString(),
+      app.get("PORT"), process.env.NODE_ENV
+    );
   }
 });
 
