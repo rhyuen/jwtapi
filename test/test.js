@@ -10,7 +10,6 @@ const User = require("../models/user.js");
 const server = require("../server.js");
 //for Cookie Retention
 
-
 chai.use(chaiHttp);
 let agent = chai.request.agent(server);
 

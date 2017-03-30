@@ -13,11 +13,15 @@
         <a href = "/logout">Logout</a>
       </div>
     </div>
+    <hr></hr>
     <div>
       <h1>Edit User Details Form</h1>
     </div>
     <form action = "/edit" method = "POST">
-
+      <label>Password</label><span>-</span><input type = "password" placeholder="New Password"/></br>
+      <label>Location</label><span>-</span><input type = "text" placeholder="Location"/></br>
+      <label>Gender</label><span>-</span><input type = "text" placeholder = "Gender"/></br>
+      <label>Birthday</label><span>-</span><input type = "text" placeholder="Your Birthday"/></br>
       <input type = "submit" value = "Save Changes"/>
     </form>
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>

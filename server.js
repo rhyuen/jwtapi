@@ -16,36 +16,10 @@ const config = require("./config.js");
 const routes = require("./routes.js");
 const User = require("./models/user.js");
 const apiRoutes = require("./apiroutes.js");
+require("./dbconn.js")();
 
 app.set("PORT", process.env.PORT|| 9899);
-const mongooseServerOptions = {
-  server: {
-    auto_reconnect: true,
-    reconnectTries: Number.MAX_VALUE
-  }
-};
-mongoose.connect(config.db, mongooseServerOptions, (err) => {
-  if(err){
-    console.error("[%s] DB CONN ERROR: %s", new Date().toLocaleString(), err);
-  }else{
-    console.log("[%s] DB CONN ATTEMPT", new Date().toLocaleString());
-  }
-});
-mongoose.connection.once("open", () => {
-  console.log("[%s] DB CONN open", new Date().toLocaleString());
-});
-mongoose.connection.on("error", (err) => {
-  console.log("[%s][MONGOOSE ERR] %s", new Date().toLocaleString(), err);
-});
-mongoose.connection.on("connected", () => {
-  console.info("[%s] DB CONN connected", new Date().toLocaleString());
-});
-mongoose.connection.on("disconnected", () => {
-  console.error("[%s] DB disconnected", new Date().toLocaleString());
-});
-mongoose.connection.on("reconnected", () => {
-  console.info("[%s] DB reconnected", new Date().toLocaleString());
-});
+
 app.use(cookieParser(config.cookieSecret, {
   httpOnly: true,
   maxAge: 3600
@@ -71,15 +45,15 @@ app.get("*", (req, res) => {
   res.redirect("/");
 });
 
-app.listen(app.get("PORT"), (err) => {
-  if(err){
-    console.error("ERROR: %s", err);
-  }else{
-    console.log("[%s] App started. \n\tPORT: %s\n\tENV: %s",
-      new Date().toLocaleString(),
-      app.get("PORT"), process.env.NODE_ENV
-    );
-  }
-});
+// app.listen(app.get("PORT"), (err) => {
+//   if(err){
+//     console.error("ERROR: %s", err);
+//   }else{
+//     console.log("[%s] App started. \n\tPORT: %s\n\tENV: %s",
+//       new Date().toLocaleString(),
+//       app.get("PORT"), process.env.NODE_ENV
+//     );
+//   }
+// });
 
 module.exports = app;

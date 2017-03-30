@@ -12,7 +12,6 @@ class TopBar extends Component{
     return (
       <div>
         <div><a href = "/">HOME</a></div>
-        <div><a href = "/browse">Search</a></div>
         <div><a href = "/browse">Browse</a></div>
         <div><a href = "/user">Profile</a></div>
         <div><a href = "/register">Signup</a></div>

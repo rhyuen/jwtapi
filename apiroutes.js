@@ -8,8 +8,6 @@ const User = require("./models/user.js");
 const Post = require("./models/post.js");
 const config = require("./config.js");
 const auth = require("./auth.js");
-
-
 const apiRouter = express.Router();
 
 apiRouter.post("/authenticate", (req, res) => {
@@ -77,15 +75,18 @@ apiRouter.get("/user", auth.isCookieAuthJWT, (req, res) => {
 apiRouter.get("/edit", auth.isCookieAuthJWT, (req, res) => {
   console.log("EDIT PATH");
   console.log(req.decoded);
-  var zeName = req.decoded.username.toString();
-  User.findOne({name: zeName}, (err, foundUser) => {
+  let userToEdit = req.decoded.username.toString();
+  User.findOne({name: userToEdit}, (err, foundUser) => {
     if(err){
       console.log(err);
       return res.sendFile(path.join(__dirname, "public/views/error.html"));
     }
     else{
       return res.render("edit", {
-        name: foundUser.name
+        name: foundUser.name,
+        location: foundUser.location,
+        gender: foundUser.gender,
+        birthday: foundUser.birthDate
       });
     }
   });
@@ -109,10 +110,10 @@ apiRouter.get("/posts", auth.isCookieAuthJWT, (req, res) => {
 apiRouter.post("/posts", auth.isCookieAuthJWT, (req, res) => {
 
   var newPost = new Post({
-    title: req.body.form_title,
-    body: req.body.form_post,
-    user: req.decoded.username,
-    tags: req.body.form_tags
+    title: validator.escape(req.body.form_title),
+    body: validator.escape(req.body.form_post),
+    user: validator.escape(req.decoded.username),
+    tags: validator.escape(req.body.form_tags)
   });
 
   newPost.save((err, latestPost)=>{
