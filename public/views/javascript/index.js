@@ -6,6 +6,11 @@ $(document).ready(function(){
   }else{
     $("#redirect_message").css({visibility: "hidden"});
   }
+  if(document.referrer.includes("forgot")){
+    $("#forgot_message").css({visibility: "visible"});
+  }else{
+    $("#forgot_message").css({visibility: "hidden"});
+  }
 
   var formName = $("input[name='name']");
   var formPassword = $("input[name='password']");

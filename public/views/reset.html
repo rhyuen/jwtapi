@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Forgot Password</title>
+    <title>RESET Password</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
@@ -13,17 +13,21 @@
         <a href = "/browse">Browse</a>
       </div>
     </div>
-    <div>I forgot my Password</div>
+    <div>Reset your password</div>
     <hr></hr>
+    <div>
+      Resetting Password for User
+    </div>
 
-    <form action = "/forgot" method = "POST" >
-      <input type = "text" placeholder="Email Address" name = "forgot_email_address" required/><br/>
+    <form action = "/reset" method = "POST" >
+      <input id = "forgetpassword" type = "text" placeholder="Your new password." name = "password" required/><br/>
+      <input type = "text" placeholder="Type it again." name = "password" required/><br/>
       <input type ="submit" value="Submit" />
     </form>
 
 
     <script src = "bower_lib/validator.js"></script>
     <script src = "https://code.jquery.com/jquery-1.12.0.min.js"></script>
-    <script type = "text/javascript" src = "views/javascript/forgot.js"></script>
+    <script type = "text/javascript" src = "views/javascript/reset.js"></script>
   </body>
 </html>

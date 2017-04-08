@@ -31,7 +31,6 @@ apiRouter.post("/authenticate", (req, res) => {
           issuer: "TestServer",
           expiresIn: "10h"
         };
-        console.log("USERNAME: %s",  user.name);
         var tokenPayload = {
           //Add a "sub" field for user ID.
           username: user.name,
@@ -49,8 +48,8 @@ apiRouter.post("/authenticate", (req, res) => {
           // });
 
           res.cookie("id_token", token, {
-            expires: new Date(Date.now() + 36000),
-            httpOnly: true
+            expires: new Date(Date.now() + 36000)
+            // httpOnly: true
           });
           res.status(200).send({message: "cookie set."});
         });

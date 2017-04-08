@@ -3,8 +3,10 @@
 const express = require("express");
 const path = require("path");
 const validator = require("validator");
+const bcrypt = require('bcrypt-nodejs');
 const User = require("./models/user.js");
 const Post = require("./models/post.js");
+const Auth = require("./auth.js");
 
 
 
@@ -69,9 +71,33 @@ router.get("/forgot", (req, res) => {
 
 router.post("/forgot", (req, res) => {
   let cleanedEmail = validator.escape(req.body.forgot_email_address);
+  let host = req.headers.host;
   console.log(cleanedEmail);
-  require("./email.js")(cleanedEmail);
+  require("./email.js")(host, cleanedEmail);
   res.redirect("/");
+});
+
+router.get("/reset", Auth.isParamAuthJWT, (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, "public/views/reset.html"));
+});
+
+router.post("/reset", Auth.isParamAuthJWT, (req, res) => {
+  const latestHash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null);
+  console.log("USERNAME: %s", req.decoded.username);
+  console.log("HASH: %s", latestHash);
+  User.update({name: req.decoded.username}, {$set: {password: latestHash}}, (err, updatedUser) => {
+    if(err){
+      console.error(
+        "[%s] ERROR: %s",
+        new Date().toLocaleString(),
+        err
+      );
+      return res.redirect("/error")
+    }else{
+      console.dir(updatedUser);
+      return res.redirect("/");
+    }
+  });
 });
 
 router.get("/error", (req, res) => {

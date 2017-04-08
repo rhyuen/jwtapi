@@ -3,3 +3,4 @@ npm-debug.log*
 keys.json
 uploaded/*
 bower_components
+*.pem

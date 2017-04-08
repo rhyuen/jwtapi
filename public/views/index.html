@@ -2,10 +2,17 @@
 <html>
   <head>
     <title>JWT Auth and what not.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       #redirect_message{
-        visibility: : hidden;
+        visibility:hidden;
         background-color: rgb(114, 181, 87);
+        color: white;
+        padding: 5px;
+      }
+      #forgot_message{
+        visibility:hidden;
+        background-color: rgb(33, 116, 176);
         color: white;
         padding: 5px;
       }
@@ -17,6 +24,11 @@
       <div id = "redirect_message">
         <div class = "content">
           Thanks for signing up.  Now try logging in below!
+        </div>
+      </div>
+      <div id = "forgot_message">
+        <div class = "content">
+          Your password reset email is on its way!
         </div>
       </div>
       <h4>Navigation</h4>
