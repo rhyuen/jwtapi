@@ -8,15 +8,13 @@ const User = require("./models/user.js");
 const Post = require("./models/post.js");
 const Auth = require("./auth.js");
 
-
-
 const router = express.Router();
 
 router.get("/", (req, res) => {
   if(req.cookies.id_token){
     res.redirect("/api/user");
   }else{
-    res.status(200).sendFile(path.join(__dirname, "public/views/index.html"));
+    res.status(200).sendFile(path.join(__dirname, "public/views/indextwo.html"));
   }
 });
 
@@ -58,7 +56,11 @@ router.post("/register", (req, res) => {
 
   currUser.save((err, user) => {
     if(err){
-      return console.error("[%s] ERROR: %s", new Date().toLocaleString(), err);
+      return console.error(
+        "[%s] ERROR: %s",
+        new Date().toLocaleString(),
+        err
+      );
     }else{
       res.redirect("/");
     }
@@ -72,9 +74,8 @@ router.get("/forgot", (req, res) => {
 router.post("/forgot", (req, res) => {
   let cleanedEmail = validator.escape(req.body.forgot_email_address);
   let host = req.headers.host;
-  console.log(cleanedEmail);
   require("./email.js")(host, cleanedEmail);
-  res.redirect("/");
+  res.status(302).redirect("/");
 });
 
 router.get("/reset", Auth.isParamAuthJWT, (req, res) => {
@@ -83,19 +84,17 @@ router.get("/reset", Auth.isParamAuthJWT, (req, res) => {
 
 router.post("/reset", Auth.isParamAuthJWT, (req, res) => {
   const latestHash = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(8), null);
-  console.log("USERNAME: %s", req.decoded.username);
-  console.log("HASH: %s", latestHash);
+
   User.update({name: req.decoded.username}, {$set: {password: latestHash}}, (err, updatedUser) => {
     if(err){
       console.error(
-        "[%s] ERROR: %s",
+        "[%s] ERROR changing password: %s",
         new Date().toLocaleString(),
         err
       );
-      return res.redirect("/error")
+      return res.status(302).redirect("/error")
     }else{
-      console.dir(updatedUser);
-      return res.redirect("/");
+      return res.status(302).redirect("/");
     }
   });
 });

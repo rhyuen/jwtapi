@@ -1,6 +1,7 @@
 "use strict";
 
 const server = require("./server.js");
+require("./dbconn.js")();
 
 server.listen(server.get("PORT"), (err) => {
   if(err){

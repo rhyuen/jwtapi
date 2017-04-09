@@ -25,16 +25,16 @@ module.exports = function(host, userEmailAddress){
 
   const tokenPayload = {
     username: userEmailAddress,
-    jti: "99991234",
+    data: "Password Reset Token",
+    jti: Math.floor(Math.random()*1000000000),
     iat: Math.floor(Date.now()/1000)
   };
   const tokenOptions = {
-    expiresIn: Math.floor(Date.now()/1000) + (1200), //20 minutes
+    expiresIn: "1200s",
     issuer: "EMAIL RESET"
   };
 
   const resetToken = jwt.sign(tokenPayload, config.jwtsecret, tokenOptions);
-  //const resetPwLink = "https://yarr-reader.now.sh/";
   const resetPwLinkAlt = host + "/reset?token=" + resetToken;
   const designateFromEmailAddr = `Noreply Tilders <${config.email.from_vanity_email}>`;
   const designateToEmailAddr = (process.env.NODE_ENV === "development") ? config.email.test_email_address: userEmailAddress;
@@ -48,12 +48,18 @@ module.exports = function(host, userEmailAddress){
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
-    if(err)
-      return console.log("[%s] ERROR: %s", new Date().toLocaleString(), err);
-    console.log(
-      "[%s]: The email has been sent.\nDetails: %s",
-      new Date().toLocaleString(),
-      info.response
-    );
+    if(err){
+      return console.error(
+        "[%s] MAIL ERROR: %s",
+        new Date().toLocaleString(),
+        err
+      );
+    }else{
+      return console.log(
+        "[%s]: The email has been sent.\nDetails: %s",
+        new Date().toLocaleString(),
+        info.response
+      );
+    }
   });
 };

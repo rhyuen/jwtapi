@@ -18,6 +18,7 @@ describe("Home Page", () => {
     chai.request(server)
       .get("/")
       .end((err, res) => {
+        should.not.exist(err);
         res.should.have.status(200);
         done();
       });
@@ -29,6 +30,7 @@ describe("Home Page", () => {
       .field("name", "NewestUserName")
       .field("password", "NewestPassword")
       .end((err, res) => {
+        should.not.exist(err);
         res.should.have.status(200);
         done();
       });
@@ -40,6 +42,7 @@ describe("Register Page", () => {
     chai.request(server)
       .get("/register")
       .end((err, res) => {
+        should.not.exist(err);
         res.should.have.status(200);
         done();
       });
@@ -48,8 +51,7 @@ describe("Register Page", () => {
   it("should CREATE a new Account", (done) => {
     chai.request(server)
       .post("/register")
-      .field("newusername", "NewestUserName")
-      .field("newpassword", "NewestPassword")
+      .send({newusername: "NewestUserName", newpassword: "NewestPassword"})
       .end((err, res) => {
         res.should.have.status(200);
         done();
@@ -76,6 +78,26 @@ describe("Forgot Password Page", () => {
         .get("/forgot")
         .end((err, res) => {
           res.should.have.status(200);
+          done();
+        });
+  });
+
+  it("should redirect you to the login page", (done) => {
+    chai.request(server)
+      .post("/forgot")
+      .send({forgot_email_address: "TestEmailAddress2000@gmail.com"})
+      .end((err, res) => {
+        res.should.have.status(302);
+      });
+  });
+});
+
+describe("Reset Password Page", () => {
+  it("should return DENIED", (done) => {
+      chai.request(server)
+        .get("/reset")
+        .end((err, res) => {
+          res.should.have.status(403);
           done();
         });
   });

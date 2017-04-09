@@ -14,29 +14,40 @@ apiRouter.post("/authenticate", (req, res) => {
   let cleanFormName = validator.escape(req.body.name);
 
   User.findOne({name: cleanFormName}, (err, user) => {
-    if(err) throw err;
-    if(!user)
+    if(err){
+      console.error(
+        "[%s] ERROR: %s",
+        new Date().toLocaleString(),
+        err
+      );
+      res.json({
+        success: false,
+        message: "Auth failed. An error occurred."
+      });
+    }if(!user){
       res.json({
         success: false,
         message: "Auth failed.  User doesn't exist."
       });
-    else{
+    }else{
       if(!user.validPassword(req.body.password)){
         res.json({
           success: false,
           message: "Auth failed. User pw wrong."
         });
       }else{
-        const tokenOptions = {
-          issuer: "TestServer",
-          expiresIn: "10h"
-        };
-        var tokenPayload = {
+        const tokenPayload = {
           //Add a "sub" field for user ID.
           username: user.name,
-          jti: "34343409",
+          data: "Login Token",
+          jti: Math.floor(Math.random()*1000000000),
           iat: Math.floor(Date.now()/1000)
         };
+        const tokenOptions = {
+          issuer: "TestServer",
+          expiresIn: "1h"
+        };
+
         jwt.sign(tokenPayload, config.jwtsecret, tokenOptions, (err, token) => {
           if(err){
             return console.error(err);
@@ -48,8 +59,8 @@ apiRouter.post("/authenticate", (req, res) => {
           // });
 
           res.cookie("id_token", token, {
-            expires: new Date(Date.now() + 36000)
-            // httpOnly: true
+            expires: new Date(Date.now() + 36000),
+            httpOnly: true
           });
           res.status(200).send({message: "cookie set."});
         });
